@@ -12,20 +12,26 @@ import web.connection.ApplicationDAO;
  *
  * @author juandiego@comtor.net
  * @since 1.8
- * @version Apr 03, 2019
+ * @version Apr 16, 2019
  */
-@ComtorElement(tableName = "zone")
+@ComtorElement(tableName = "campaign_x_zone")
 @ComtorDaoFactory(factory = ApplicationDAO.class)
-public class Zone implements Serializable {
+public class CampaignXZone implements Serializable {
 
-    private static final long serialVersionUID = -8208208000808458825L;
+    private static final long serialVersionUID = -6052896405478508213L;
 
     @ComtorId
     @ComtorSequence(name = ComtorJDBCDao.MYSQL_SEQUENCE, typeInsert = ComtorSequence.POST_INSERT)
     private long id;
-    private String name;
+    private long campaign;
+    private long zone;
 
-    public Zone() {
+    public CampaignXZone() {
+    }
+
+    public CampaignXZone(long campaign, long zone) {
+        this.campaign = campaign;
+        this.zone = zone;
     }
 
     public long getId() {
@@ -36,20 +42,28 @@ public class Zone implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public long getCampaign() {
+        return campaign;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCampaign(long campaign) {
+        this.campaign = campaign;
     }
 
+    public long getZone() {
+        return zone;
+    }
+
+    public void setZone(long zone) {
+        this.zone = zone;
+    }
 
     @Override
     public String toString() {
-        return "Zone{"
+        return "CampaignXZone{"
                 + "id=" + id
-                + ", name=" + name
+                + ", campaign=" + campaign
+                + ", zone=" + zone
                 + '}';
     }
 

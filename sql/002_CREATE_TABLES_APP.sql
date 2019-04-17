@@ -78,59 +78,16 @@ VALUES
     ('VIEW_HAPPY_HOUR', 'Ver Hora Libre', 'Kioscos'),
     ('DELETE_HAPPY_HOUR', 'Eliminar Hora Libre', 'Kioscos');
 
-
--- -----------------------------------------------------------------------------
--- Tabla sponsor
--- -----------------------------------------------------------------------------
-DROP TABLE IF EXISTS sponsor;
-
-CREATE TABLE sponsor (
-    id          INT             NOT NULL        AUTO_INCREMENT,
-    name        VARCHAR(128)    NOT NULL,
-    contact     VARCHAR(256)    DEFAULT '',
-    phone       VARCHAR(32)     DEFAULT '',
-    email       VARCHAR(128)    DEFAULT ''
-
-    PRIMARY KEY(id)
-);
-
-INSERT INTO 
-    privilege (code, description, category)
-VALUES
-    ('ADD_SPONSOR', 'Agregar patrocinador y publicidad', 'Publicidad'), 
-    ('EDIT_SPONSOR', 'Editar patrocinador y publicidad', 'Publicidad'),
-    ('VIEW_SPONSOR', 'Ver patrocinador y publicidad', 'Publicidad'),
-    ('DELETE_SPONSOR', 'Eliminar patrocinador y publicidad', 'Publicidad');
-
--- -----------------------------------------------------------------------------
--- Tabla sponsor
--- -----------------------------------------------------------------------------
-DROP TABLE IF EXISTS advertising_campaign;
-
-CREATE TABLE advertising_campaign (
-    id          INT             NOT NULL        AUTO_INCREMENT,
-    sponsor     INT             NOT NULL,
-    banner_1    VARCHAR(512)    NOT NULL,
-    banner_2    VARCHAR(512)    NOT NULL,
-    survey      INT             DEFAULT 0,
-    start_date  DATE            DEFAULT NULL,
-    end_date    DATE            DEFAULT NULL,
-    active      TINYINT(1)      DEFAULT 1,
-
-    PRIMARY KEY(id)
-);
-
 -- -----------------------------------------------------------------------------
 -- Tabla zone
 -- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS zone;
 
 CREATE TABLE zone (
-    id                      INT(11)             NOT NULL        AUTO_INCREMENT,
-    name                    VARCHAR(128)        NOT NULL,
-    advertising_campaign    INT                 DEFAULT 0,
+    id                      INT                 NOT NULL        AUTO_INCREMENT,
+    name                    VARCHAR(64)         NOT NULL,
 
-    PRIMARY KEY(id)
+    PRIMARY KEY (id)
 );
 
 -- -----------------------------------------------------------------------------
@@ -143,17 +100,17 @@ CREATE TABLE hotspot (
     called_station_id   VARCHAR(64)     NOT NULL,
     ip_address          VARCHAR(64)     NOT NULL,
     name                VARCHAR(64)     DEFAULT '',
-    zone                INT(11)         DEFAULT 0,
+    zone                INT(11)         NOT NULL,
     username            VARCHAR(64)     DEFAULT '',
     password            VARCHAR(128)    DEFAULT '',
     configured          TINYINT(1)      DEFAULT 0,
   
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (zone) REFERENCES zone(id)
 );
 
 CREATE INDEX hotspot_called_station_id_idx ON hotspot(called_station_id);
 CREATE INDEX hotspot_ip_address_idx ON hotspot(ip_address);
-CREATE INDEX hotspot_zone_idx ON hotspot(zone);
 
 INSERT INTO 
     privilege (code, description, category)
@@ -360,3 +317,97 @@ CREATE TABLE seller_stats (
 
     PRIMARY KEY(id)
 );
+
+-- -----------------------------------------------------------------------------
+-- Tabla sponsor
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS sponsor;
+
+CREATE TABLE sponsor (
+    id          INT             NOT NULL        AUTO_INCREMENT,
+    name        VARCHAR(64)     NOT NULL,
+    contact     VARCHAR(64)     DEFAULT '',
+    phone       VARCHAR(32)     DEFAULT '',
+    email       VARCHAR(64)     DEFAULT '',
+
+    PRIMARY KEY (id)
+);
+
+-- -----------------------------------------------------------------------------
+-- Tabla campaign
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS campaign;
+
+CREATE TABLE campaign (
+    id              INT             NOT NULL        AUTO_INCREMENT,
+    description     VARCHAR(128)    DEFAULT '',
+    banner_1        VARCHAR(128)    NOT NULL,
+    banner_2        VARCHAR(128)    NOT NULL,
+    start_date      DATE            DEFAULT NULL,
+    end_date        DATE            DEFAULT NULL,
+    sponsor         INT             NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (sponsor) REFERENCES sponsor (id)
+);
+
+-- -----------------------------------------------------------------------------
+-- Tabla campaign_x_zone
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS campaign_x_zone;
+
+CREATE TABLE campaign_x_zone (
+    id          INT     NOT NULL        AUTO_INCREMENT,
+    campaign    INT     NOT NULL,
+    zone        INT     NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (campaign) REFERENCES campaign (id) ON DELETE CASCADE,
+    FOREIGN KEY (zone) REFERENCES zone (id) ON DELETE CASCADE
+);
+-- -----------------------------------------------------------------------------
+-- Tabla survey
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS survey;
+
+CREATE TABLE survey (
+    id              INT                 NOT NULL        AUTO_INCREMENT,
+    description     VARCHAR(128)        DEFAULT '',
+    campaign        INT                 NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (campaign) REFERENCES campaign (id) ON DELETE CASCADE
+);
+
+-- -----------------------------------------------------------------------------
+-- Tabla question
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS question;
+
+CREATE TABLE question (
+    id          INT                 NOT NULL        AUTO_INCREMENT,
+    type        VARCHAR(16)         DEFAULT '',
+    question    VARCHAR(512)        NOT NULL,
+    options     VARCHAR(4096)       NOT NULL,
+    survey      INT                 NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (survey) REFERENCES survey (id) ON DELETE CASCADE
+);
+
+-- -----------------------------------------------------------------------------
+-- Tabla answer
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS answer;
+
+CREATE TABLE answer (
+    id              INT             NOT NULL        AUTO_INCREMENT,
+    response        VARCHAR(512)    NOT NULL,
+    answer_date     DATE            DEFAULT NULL,
+    question        INT             NOT NULL,
+    hotspot         INT             NOT NULL,
+  
+    PRIMARY KEY (id),
+    FOREIGN KEY (question) REFERENCES question (id) ON DELETE CASCADE
+);
+

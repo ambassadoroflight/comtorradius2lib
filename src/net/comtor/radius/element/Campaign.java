@@ -1,9 +1,11 @@
 package net.comtor.radius.element;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import net.comtor.dao.ComtorJDBCDao;
 import net.comtor.dao.annotations.ComtorDaoFactory;
 import net.comtor.dao.annotations.ComtorElement;
+import net.comtor.dao.annotations.ComtorField;
 import net.comtor.dao.annotations.ComtorForeingField;
 import net.comtor.dao.annotations.ComtorId;
 import net.comtor.dao.annotations.ComtorSequence;
@@ -13,30 +15,31 @@ import web.connection.ApplicationDAO;
  *
  * @author juandiego@comtor.net
  * @since 1.8
- * @version Apr 04, 2019
+ * @version Apr 16, 2019
  */
-@ComtorElement(tableName = "advertising_campaign")
+@ComtorElement(tableName = "campaign")
 @ComtorDaoFactory(factory = ApplicationDAO.class)
-public class AdvertisingCampaign implements Serializable {
+public class Campaign implements Serializable {
 
-    private static final long serialVersionUID = 737240323779905295L;
+    private static final long serialVersionUID = -7354386585376297503L;
 
     @ComtorId
     @ComtorSequence(name = ComtorJDBCDao.MYSQL_SEQUENCE, typeInsert = ComtorSequence.POST_INSERT)
     private long id;
-    private long sponsor;
     private String description;
     private String banner_1;
     private String banner_2;
-    private long survey;
     private java.sql.Date start_date;
     private java.sql.Date end_date;
-    private boolean active;
+    private long sponsor;
 
     @ComtorForeingField(referencesClass = Sponsor.class, foreingColumn = "name", referencesColumn = "sponsor")
     private String sponsor_name;
 
-    public AdvertisingCampaign() {
+    @ComtorField(insertable = false, updatable = false, findable = false, selectable = false)
+    private LinkedList<String> zones;
+
+    public Campaign() {
     }
 
     public long getId() {
@@ -45,14 +48,6 @@ public class AdvertisingCampaign implements Serializable {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public long getSponsor() {
-        return sponsor;
-    }
-
-    public void setSponsor(long sponsor) {
-        this.sponsor = sponsor;
     }
 
     public String getDescription() {
@@ -79,14 +74,6 @@ public class AdvertisingCampaign implements Serializable {
         this.banner_2 = banner_2;
     }
 
-    public long getSurvey() {
-        return survey;
-    }
-
-    public void setSurvey(long survey) {
-        this.survey = survey;
-    }
-
     public java.sql.Date getStart_date() {
         return start_date;
     }
@@ -103,12 +90,12 @@ public class AdvertisingCampaign implements Serializable {
         this.end_date = end_date;
     }
 
-    public boolean isActive() {
-        return active;
+    public long getSponsor() {
+        return sponsor;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setSponsor(long sponsor) {
+        this.sponsor = sponsor;
     }
 
     public String getSponsor_name() {
@@ -119,21 +106,25 @@ public class AdvertisingCampaign implements Serializable {
         this.sponsor_name = sponsor_name;
     }
 
-    public String getStatus() {
-        return (active ? "Activa" : "Inactiva");
+    public LinkedList<String> getZones() {
+        return zones;
+    }
+
+    public void setZones(LinkedList<String> zones) {
+        this.zones = zones;
     }
 
     @Override
     public String toString() {
-        return "AdvertisingCampaign{"
+        return "Campaign{"
                 + "id=" + id
-                + ", sponsor=" + sponsor
                 + ", description=" + description
                 + ", banner_1=" + banner_1
                 + ", banner_2=" + banner_2
                 + ", start_date=" + start_date
                 + ", end_date=" + end_date
-                + ", active=" + active
+                + ", sponsor=" + sponsor
+                + ", sponsor_name=" + sponsor_name
                 + '}';
     }
 
