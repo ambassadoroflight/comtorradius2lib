@@ -29,6 +29,9 @@ public class Hotspot implements Serializable {
     private long zone;
     private String username;
     private String password;
+    private double latitude;
+    private double longitude;
+    private String what3words;
     private boolean configured;
 
     @ComtorForeingField(referencesClass = Zone.class, foreingColumn = "name", referencesColumn = "zone")
@@ -93,6 +96,30 @@ public class Hotspot implements Serializable {
         this.password = password;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getWhat3words() {
+        return what3words;
+    }
+
+    public void setWhat3words(String what3words) {
+        this.what3words = what3words;
+    }
+
     public boolean isConfigured() {
         return configured;
     }
@@ -116,9 +143,14 @@ public class Hotspot implements Serializable {
                 + ", called_station_id=" + called_station_id
                 + ", ip_address=" + ip_address
                 + ", name=" + name
+                + ", zone=" + zone
                 + ", username=" + username
                 + ", password=" + password
+                + ", latitude=" + latitude
+                + ", longitude=" + longitude
+                + ", what3words=" + what3words
                 + ", configured=" + configured
+                + ", zone_name=" + zone_name
                 + '}';
     }
 
