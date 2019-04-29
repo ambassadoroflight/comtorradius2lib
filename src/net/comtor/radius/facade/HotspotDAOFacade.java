@@ -3,7 +3,9 @@ package net.comtor.radius.facade;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import net.comtor.dao.ComtorDaoException;
 import net.comtor.dao.ComtorJDBCDao;
 import net.comtor.dao.generics.ComtorDaoElementLogicFacade;
@@ -19,6 +21,26 @@ public class HotspotDAOFacade extends ComtorDaoElementLogicFacade<Hotspot, Long>
 
     public LinkedList<Hotspot> findAll() throws ComtorDaoException {
         return super.findAll(getFindQuery());
+    }
+
+    public List<Hotspot> findBySponsor(final Long sponsor) throws ComtorDaoException {
+        String query = "\n"
+                + " SELECT \n"
+                + "     h.* \n"
+                + " FROM \n"
+                + "     hotspot h \n";
+        ArrayList<Object> params = new ArrayList<>();
+
+        if (sponsor > 0) {
+            query += " "
+                    + " JOIN campaign_x_zone cxz    ON cxz.zone = h.zone \n"
+                    + " JOIN campaign c             ON c.id = cxz.campaign \n"
+                    + " WHERE \n"
+                    + "     c.sponsor = ? \n";
+            params.add(sponsor);
+        }
+        
+        return findAll(query, params.toArray());
     }
 
     public Hotspot findByCalledStationIdAndIpAddress(final String called_station_id,
