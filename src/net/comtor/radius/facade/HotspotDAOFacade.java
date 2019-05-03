@@ -10,6 +10,7 @@ import net.comtor.dao.ComtorDaoException;
 import net.comtor.dao.ComtorJDBCDao;
 import net.comtor.dao.generics.ComtorDaoElementLogicFacade;
 import net.comtor.radius.element.Hotspot;
+import net.comtor.util.StringUtil;
 import web.connection.ApplicationDAO;
 
 /**
@@ -23,23 +24,55 @@ public class HotspotDAOFacade extends ComtorDaoElementLogicFacade<Hotspot, Long>
         return super.findAll(getFindQuery());
     }
 
-    public List<Hotspot> findBySponsor(final Long sponsor) throws ComtorDaoException {
+    public List<Hotspot> find(final Long sponsor, final long zone, final String country,
+            final java.sql.Date start_date, final java.sql.Date end_date) throws ComtorDaoException {
         String query = "\n"
                 + " SELECT \n"
                 + "     h.* \n"
                 + " FROM \n"
                 + "     hotspot h \n";
+ 
+        if ((sponsor > 0) || (start_date != null) || (end_date != null)) {
+            query += " JOIN campaign_x_zone cxz    ON cxz.zone = h.zone \n"
+                    + " JOIN campaign c             ON c.id = cxz.campaign \n";
+        }
+
+        if ((zone > 0) || StringUtil.isValid(country)) {
+            query += " JOIN zone z ON z.id = h.zone \n";
+        }
+        
+        query += " WHERE \n"
+                + "     1 = 1 \n";
         ArrayList<Object> params = new ArrayList<>();
 
         if (sponsor > 0) {
-            query += " "
-                    + " JOIN campaign_x_zone cxz    ON cxz.zone = h.zone \n"
-                    + " JOIN campaign c             ON c.id = cxz.campaign \n"
-                    + " WHERE \n"
-                    + "     c.sponsor = ? \n";
+            query += "  AND c.sponsor = ? \n";
             params.add(sponsor);
         }
-        
+
+        if (zone > 0) {
+            query += "  AND h.zone = ? \n";
+            params.add(zone);
+        }
+
+        if (StringUtil.isValid(country)) {
+            query += "  AND z.country = ? \n";
+            params.add(country);
+        }
+
+        if (start_date != null) {
+            query += "  AND c.start_date >= ? \n";
+            params.add(start_date);
+        }
+
+        if (end_date != null) {
+            query += "  AND c.end_date >= ? \n";
+            params.add(end_date);
+        }
+
+        System.out.println(query);
+        System.out.println(params.toString());
+
         return findAll(query, params.toArray());
     }
 

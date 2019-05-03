@@ -6,6 +6,8 @@ import net.comtor.dao.ComtorJDBCDao;
 import net.comtor.dao.annotations.ComtorDaoFactory;
 import net.comtor.dao.annotations.ComtorElement;
 import net.comtor.dao.annotations.ComtorForeingField;
+import net.comtor.dao.annotations.ComtorForeingFieldByJoin;
+import net.comtor.dao.annotations.ComtorForeingFieldFromJoin;
 import net.comtor.dao.annotations.ComtorId;
 import net.comtor.dao.annotations.ComtorSequence;
 
@@ -36,6 +38,9 @@ public class Hotspot implements Serializable {
 
     @ComtorForeingField(referencesClass = Zone.class, foreingColumn = "name", referencesColumn = "zone")
     private String zone_name;
+
+    @ComtorForeingField(referencesClass = Zone.class, foreingColumn = "country", referencesColumn = "zone")
+    private String zone_country;
 
     public Hotspot() {
     }
@@ -136,6 +141,18 @@ public class Hotspot implements Serializable {
         this.zone_name = zone_name;
     }
 
+    public String getZone_country() {
+        return zone_country;
+    }
+
+    public void setZone_country(String zone_country) {
+        this.zone_country = zone_country;
+    }
+
+    public String getCoordinates() {
+        return latitude + ", " + longitude;
+    }
+
     @Override
     public String toString() {
         return "Hotspot{"
@@ -145,12 +162,10 @@ public class Hotspot implements Serializable {
                 + ", name=" + name
                 + ", zone=" + zone
                 + ", username=" + username
-                + ", password=" + password
                 + ", latitude=" + latitude
                 + ", longitude=" + longitude
                 + ", what3words=" + what3words
                 + ", configured=" + configured
-                + ", zone_name=" + zone_name
                 + '}';
     }
 
