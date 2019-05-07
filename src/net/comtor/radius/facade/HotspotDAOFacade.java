@@ -33,7 +33,8 @@ public class HotspotDAOFacade extends ComtorDaoElementLogicFacade<Hotspot, Long>
                 + "     hotspot h \n";
  
         if ((sponsor > 0) || (start_date != null) || (end_date != null)) {
-            query += " JOIN campaign_x_zone cxz    ON cxz.zone = h.zone \n"
+            query += ""
+                    + " JOIN campaign_x_zone cxz    ON cxz.zone = h.zone \n"
                     + " JOIN campaign c             ON c.id = cxz.campaign \n";
         }
 
@@ -41,9 +42,10 @@ public class HotspotDAOFacade extends ComtorDaoElementLogicFacade<Hotspot, Long>
             query += " JOIN zone z ON z.id = h.zone \n";
         }
         
-        query += " WHERE \n"
+        query += ""
+                + " WHERE \n"
                 + "     1 = 1 \n";
-        ArrayList<Object> params = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
 
         if (sponsor > 0) {
             query += "  AND c.sponsor = ? \n";
@@ -66,12 +68,9 @@ public class HotspotDAOFacade extends ComtorDaoElementLogicFacade<Hotspot, Long>
         }
 
         if (end_date != null) {
-            query += "  AND c.end_date >= ? \n";
+            query += "  AND c.end_date <= ? \n";
             params.add(end_date);
         }
-
-        System.out.println(query);
-        System.out.println(params.toString());
 
         return findAll(query, params.toArray());
     }
